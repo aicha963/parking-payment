@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Paiement Smart Parking</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 50px; background: #f4f4f4; }
+        .card { background: white; padding: 20px; border-radius: 10px; shadow: 0 4px 8px rgba(0,0,0,0.1); display: inline-block; }
+        button { background: #6772e5; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Réservation Parking</h2>
+        <p id="info-place">Chargement de la place...</p>
+        <p>Montant : <strong>5.00 €</strong></p>
+        <button onclick="simulerPaiement()">Payer avec Stripe</button>
+    </div>
+
+    <script>
+        // Récupérer le numéro de la place dans l'URL (ex: ?place=1)
+        const urlParams = new URLSearchParams(window.location.search);
+        const placeId = urlParams.get('place');
+        const token = "Al3eurLGTUbjWPAefx1mLEk_qoUaD7nc"; // Attention : voir section sécurité
+        
+        if(placeId) {
+            document.getElementById('info-place').innerText = "Place sélectionnée : n° " + placeId;
+        }
+
+        function simulerPaiement() {
+            alert("Redirection vers Stripe... Paiement réussi !");
+            validerChezBlynk();
+        }
+
+        function validerChezBlynk() {
+            // Calcul de la broche virtuelle : si place 1 (V30), place 2 (V31), etc.
+            // Ici on va simuler l'appui sur le bouton de réservation correspondant
+            const vPin = "V" + (29 + parseInt(placeId)); 
+            
+            const url = `https://fra1.blynk.cloud/external/api/update?token=${token}&${vPin}=1`;
+
+            fetch(url)
+                .then(response => {
+                    if(response.ok) {
+                        alert("Place validée sur l'ESP32 !");
+                        window.location.href = "merci.html";
+                    }
+                })
+                .catch(err => console.error("Erreur Blynk:", err));
+        }
+    </script>
+</body>
+</html>
