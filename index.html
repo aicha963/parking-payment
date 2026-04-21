@@ -3,110 +3,151 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Smart Parking - Paiement</title>
+<title>Paiement Sécurisé - Smart Parking</title>
 
 <style>
-body{
-    margin:0;
-    font-family:Segoe UI;
-    background:#0f172a;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    min-height:100vh;
+body {
+    font-family: 'Segoe UI', sans-serif;
+    text-align: center;
+    background: #f0f2f5;
+    padding: 20px;
 }
 
-.container{
-    background:#fff;
-    width:90%;
-    max-width:350px;
-    padding:25px;
-    border-radius:20px;
-    text-align:center;
+.box {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    max-width: 400px;
+    margin: auto;
 }
 
-.header{font-size:22px;font-weight:bold;}
-.place{color:#64748b;margin:10px 0;}
-.price{font-size:36px;font-weight:800;color:#e11d48;margin:20px 0;}
-
-button{
-    width:100%;
-    padding:15px;
-    border:none;
-    border-radius:12px;
-    background:#4f46e5;
-    color:#fff;
-    cursor:pointer;
+h1 {
+    color: #1a73e8;
+    font-size: 24px;
+    margin-bottom: 10px;
 }
 
-.modal{
-    display:none;
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,0.8);
+.place {
+    color: #666;
+    font-size: 14px;
 }
 
-.modal-content{
-    background:#fff;
-    margin:15% auto;
-    width:90%;
-    max-width:350px;
-    padding:20px;
-    border-radius:20px;
+.price {
+    font-size: 28px;
+    font-weight: bold;
+    margin: 20px 0;
+    color: #d32f2f;
+    background: #fff5f5;
+    padding: 10px;
+    border-radius: 10px;
 }
 
-.card{
-    background:#1e293b;
-    color:#fff;
-    padding:15px;
-    border-radius:10px;
-    margin-bottom:15px;
+/* Form */
+.card-form {
+    text-align: left;
+    margin-top: 20px;
 }
 
-input{
-    width:100%;
-    padding:10px;
-    margin:5px 0;
-    border-radius:8px;
-    border:1px solid #ccc;
+.input-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.row {
+    display: flex;
+    gap: 10px;
+}
+
+button {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: 0.3s;
+    width: 100%;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+button:hover {
+    background: #388E3C;
+}
+
+.footer {
+    margin-top: 20px;
+    font-size: 12px;
+    opacity: 0.6;
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
-    <div class="header">🅿️ Smart Parking</div>
-    <div class="place" id="placeInfo"></div>
-    <div class="price" id="price"></div>
-    <button onclick="openModal()">Payer</button>
+<div class="box">
+
+<h1>🅿️ SMART PARKING</h1>
+<div class="place" id="placeInfo">Place...</div>
+
+<p>Temps dépassé - Paiement requis</p>
+
+<div class="price" id="price">Calcul...</div>
+
+<div class="card-form">
+
+<div class="input-group">
+<label>Nom sur la carte</label>
+<input type="text" id="nom" placeholder="Ex: Aicha Ben Salah">
 </div>
 
-<div id="modal" class="modal">
-    <div class="modal-content">
+<div class="input-group">
+<label>Numéro de carte</label>
+<input type="text" id="numCarte" maxlength="16" placeholder="0000 0000 0000 0000">
+</div>
 
-        <h3>Paiement sécurisé</h3>
+<div class="row">
+<div class="input-group" style="flex:2;">
+<label>Expiration</label>
+<input type="text" id="date" placeholder="MM/YY">
+</div>
 
-        <div class="card">
-            <div id="num">•••• •••• •••• ••••</div>
-            <div id="nomAff">NOM</div>
-        </div>
+<div class="input-group" style="flex:1;">
+<label>CVV</label>
+<input type="password" id="cvv" placeholder="123">
+</div>
+</div>
 
-        <input id="nom" placeholder="Nom">
-        <input id="numCarte" placeholder="Numéro" maxlength="16">
+<button id="btn" onclick="payer()">CONFIRMER LE PAIEMENT</button>
 
-        <div style="display:flex;gap:10px;">
-            <input id="date" placeholder="MM/AA">
-            <input id="cvv" placeholder="CVV" maxlength="3">
-        </div>
+</div>
 
-        <button onclick="payer()" id="btn">Confirmer</button>
+<div class="footer">
+🔒 Paiement sécurisé SSL <br>
+Visa • Mastercard • Edinar
+</div>
 
-    </div>
 </div>
 
 <script>
-// URL params
+
+// PARAMS (important pour ESP32)
 const params = new URLSearchParams(window.location.search);
 const place = params.get("place") || "1";
 const amount = params.get("amount") || "3.00";
@@ -114,62 +155,42 @@ const amount = params.get("amount") || "3.00";
 document.getElementById("placeInfo").innerText = "Place n° " + place;
 document.getElementById("price").innerText = amount + " DT";
 
-// Modal
-function openModal(){
-    document.getElementById("modal").style.display="block";
-}
-
-// Card preview
-document.getElementById("numCarte").oninput = (e)=>{
-    let v = e.target.value;
-    document.getElementById("num").innerText =
-    v ? v.replace(/(.{4})/g,"$1 ") : "•••• •••• •••• ••••";
-};
-
-document.getElementById("nom").oninput = (e)=>{
-    document.getElementById("nomAff").innerText =
-    e.target.value || "NOM";
-};
-
-// Paiement
+// PAIEMENT
 function payer(){
 
-    let nom = nomEl.value;
-    let num = numCarte.value;
-    let date = dateEl.value;
-    let cvv = cvvEl.value;
+    const nom = document.getElementById("nom").value;
+    const num = document.getElementById("numCarte").value;
+    const date = document.getElementById("date").value;
+    const cvv = document.getElementById("cvv").value;
 
-    if(nom=="" || num.length!=16 || cvv.length!=3){
-        alert("Champs invalides");
+    if(!nom || num.length < 16 || !date || cvv.length < 3){
+        alert("Remplir correctement");
         return;
     }
 
-    btn.innerText="Traitement...";
-    btn.disabled=true;
+    const btn = document.getElementById("btn");
+    btn.innerText = "Traitement...";
+    btn.disabled = true;
 
-    // 🔴 IMPORTANT: normalement API backend هنا
-    setTimeout(()=>{
+    const token = "Al3eurLGTUbjWPAefx1mLEk_qoUaD7nc";
+    const vPin = "V" + (29 + parseInt(place));
 
-        // Blynk trigger
-        let token="Al3eurLGTUbjWPAefx1mLEk_qoUaD7nc"; 
-        let vPin="V"+(29+parseInt(place));
+    const url = `https://fra1.blynk.cloud/external/api/update?token=${token}&${vPin}=1`;
 
-        fetch(`https://fra1.blynk.cloud/external/api/update?token=${token}&${vPin}=1`)
-        .then(()=>{
-            alert("Paiement OK");
+    setTimeout(() => {
+        fetch(url)
+        .then(() => {
+            alert("Paiement réussi (" + amount + " DT)");
             location.reload();
         })
-        .catch(()=>{
-            alert("Erreur serveur");
+        .catch(() => {
+            alert("Erreur");
+            btn.innerText = "CONFIRMER LE PAIEMENT";
+            btn.disabled = false;
         });
-
-    },1500);
+    }, 1500);
 }
 
-// close modal
-window.onclick=(e)=>{
-    if(e.target==modal) modal.style.display="none";
-};
 </script>
 
 </body>
