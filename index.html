@@ -6,116 +6,69 @@
 <title>Smart Parking - Paiement</title>
 
 <style>
-body {
-    margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background: #0f172a;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+body{
+    margin:0;
+    font-family:Segoe UI;
+    background:#0f172a;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
 }
 
-/* Carte principale */
-.container {
-    background: white;
-    width: 350px;
-    border-radius: 20px;
-    padding: 25px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-    text-align: center;
+.container{
+    background:#fff;
+    width:90%;
+    max-width:350px;
+    padding:25px;
+    border-radius:20px;
+    text-align:center;
 }
 
-/* Header */
-.header {
-    font-size: 20px;
-    font-weight: bold;
-    color: #0f172a;
+.header{font-size:22px;font-weight:bold;}
+.place{color:#64748b;margin:10px 0;}
+.price{font-size:36px;font-weight:800;color:#e11d48;margin:20px 0;}
+
+button{
+    width:100%;
+    padding:15px;
+    border:none;
+    border-radius:12px;
+    background:#4f46e5;
+    color:#fff;
+    cursor:pointer;
 }
 
-/* Place */
-.place {
-    margin: 10px 0;
-    font-size: 14px;
-    color: #555;
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.8);
 }
 
-/* Prix */
-.price {
-    font-size: 32px;
-    font-weight: bold;
-    color: #e11d48;
-    margin: 20px 0;
+.modal-content{
+    background:#fff;
+    margin:15% auto;
+    width:90%;
+    max-width:350px;
+    padding:20px;
+    border-radius:20px;
 }
 
-/* Bouton */
-button {
-    width: 100%;
-    padding: 15px;
-    border: none;
-    border-radius: 12px;
-    background: #4f46e5;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-    transition: 0.3s;
+.card{
+    background:#1e293b;
+    color:#fff;
+    padding:15px;
+    border-radius:10px;
+    margin-bottom:15px;
 }
 
-button:hover {
-    background: #4338ca;
-}
-
-/* Popup */
-.modal {
-    display: none;
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.7);
-}
-
-/* Contenu popup */
-.modal-content {
-    background: white;
-    margin: 10% auto;
-    width: 350px;
-    padding: 20px;
-    border-radius: 20px;
-}
-
-/* Carte bancaire */
-.card-visuel {
-    background: linear-gradient(135deg, #111827, #374151);
-    color: white;
-    border-radius: 15px;
-    padding: 15px;
-    margin-bottom: 15px;
-    text-align: left;
-}
-
-.card-number {
-    font-size: 18px;
-    letter-spacing: 2px;
-}
-
-.card-name {
-    font-size: 14px;
-}
-
-/* Inputs */
-input {
-    width: 95%;
-    padding: 12px;
-    margin: 8px 0;
-    border-radius: 10px;
-    border: 1px solid #ddd;
-}
-
-/* Footer */
-.footer {
-    font-size: 12px;
-    margin-top: 10px;
-    color: #888;
+input{
+    width:100%;
+    padding:10px;
+    margin:5px 0;
+    border-radius:8px;
+    border:1px solid #ccc;
 }
 </style>
 </head>
@@ -123,43 +76,37 @@ input {
 <body>
 
 <div class="container">
-
-<div class="header">🅿️ Smart Parking</div>
-
-<div class="place" id="placeInfo">Place...</div>
-
-<div class="price" id="price">3.00 DT</div>
-
-<button onclick="openModal()">Payer maintenant</button>
-
-<div class="footer">🔒 Paiement sécurisé</div>
-
+    <div class="header">🅿️ Smart Parking</div>
+    <div class="place" id="placeInfo"></div>
+    <div class="price" id="price"></div>
+    <button onclick="openModal()">Payer</button>
 </div>
 
-<!-- POPUP -->
 <div id="modal" class="modal">
-<div class="modal-content">
+    <div class="modal-content">
 
-<h3>Paiement sécurisé</h3>
+        <h3>Paiement sécurisé</h3>
 
-<div class="card-visuel">
-<div class="card-number" id="num">•••• •••• •••• ••••</div>
-<div class="card-name" id="nomAff">Nom</div>
-</div>
+        <div class="card">
+            <div id="num">•••• •••• •••• ••••</div>
+            <div id="nomAff">NOM</div>
+        </div>
 
-<input type="text" id="nom" placeholder="Nom sur la carte">
-<input type="text" id="numCarte" placeholder="Numéro carte" maxlength="16">
-<input type="text" id="date" placeholder="MM/AA">
-<input type="text" id="cvv" placeholder="CVV">
+        <input id="nom" placeholder="Nom">
+        <input id="numCarte" placeholder="Numéro" maxlength="16">
 
-<button id="btn" onclick="payer()">Confirmer paiement</button>
+        <div style="display:flex;gap:10px;">
+            <input id="date" placeholder="MM/AA">
+            <input id="cvv" placeholder="CVV" maxlength="3">
+        </div>
 
-</div>
+        <button onclick="payer()" id="btn">Confirmer</button>
+
+    </div>
 </div>
 
 <script>
-
-// PARAMS
+// URL params
 const params = new URLSearchParams(window.location.search);
 const place = params.get("place") || "1";
 const amount = params.get("amount") || "3.00";
@@ -167,294 +114,62 @@ const amount = params.get("amount") || "3.00";
 document.getElementById("placeInfo").innerText = "Place n° " + place;
 document.getElementById("price").innerText = amount + " DT";
 
-// POPUP
+// Modal
 function openModal(){
-    document.getElementById("modal").style.display = "block";
+    document.getElementById("modal").style.display="block";
 }
 
-// VISUEL CARTE
-document.getElementById("numCarte").addEventListener("input", () => {
+// Card preview
+document.getElementById("numCarte").oninput = (e)=>{
+    let v = e.target.value;
     document.getElementById("num").innerText =
-        document.getElementById("numCarte").value || "•••• •••• •••• ••••";
-});
+    v ? v.replace(/(.{4})/g,"$1 ") : "•••• •••• •••• ••••";
+};
 
-document.getElementById("nom").addEventListener("input", () => {
+document.getElementById("nom").oninput = (e)=>{
     document.getElementById("nomAff").innerText =
-        document.getElementById("nom").value || "Nom";
-});
+    e.target.value || "NOM";
+};
 
-// PAIEMENT
-function payer() {
+// Paiement
+function payer(){
 
-    const nom = document.getElementById("nom").value;
-    const num = document.getElementById("numCarte").value;
-    const date = document.getElementById("date").value;
-    const cvv = document.getElementById("cvv").value;
+    let nom = nomEl.value;
+    let num = numCarte.value;
+    let date = dateEl.value;
+    let cvv = cvvEl.value;
 
-    if(!nom || num.length < 16 || !date || cvv.length < 3){
-        alert("Remplir correctement");
+    if(nom=="" || num.length!=16 || cvv.length!=3){
+        alert("Champs invalides");
         return;
     }
 
-    const btn = document.getElementById("btn");
-    btn.innerText = "Traitement...";
-    btn.disabled = true;
+    btn.innerText="Traitement...";
+    btn.disabled=true;
 
-    const token = "Al3eurLGTUbjWPAefx1mLEk_qoUaD7nc";
-    const vPin = "V" + (29 + parseInt(place));
+    // 🔴 IMPORTANT: normalement API backend هنا
+    setTimeout(()=>{
 
-    const url = `https://fra1.blynk.cloud/external/api/update?token=${token}&${vPin}=1`;
+        // Blynk trigger
+        let token="YOUR_TOKEN"; // ⚠️ لازم يتحط في serveur
+        let vPin="V"+(29+parseInt(place));
 
-    setTimeout(() => {
-        fetch(url)
-        .then(() => {
-            alert("Paiement réussi (" + amount + " DT)");
+        fetch(`https://fra1.blynk.cloud/external/api/update?token=${token}&${vPin}=1`)
+        .then(()=>{
+            alert("Paiement OK");
             location.reload();
         })
-        .catch(() => {
-            alert("Erreur");
-            btn.disabled = false;
+        .catch(()=>{
+            alert("Erreur serveur");
         });
-    }, 1200);
+
+    },1500);
 }
 
-// fermer modal
-window.onclick = function(e){
-    if(e.target == document.getElementById("modal")){
-        document.getElementById("modal").style.display = "none";
-    }
-}
-
-</script>
-
-</body>
-</html><!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Smart Parking - Paiement</title>
-
-<style>
-body {
-    margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background: #0f172a;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-}
-
-/* Carte principale */
-.container {
-    background: white;
-    width: 350px;
-    border-radius: 20px;
-    padding: 25px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-    text-align: center;
-}
-
-/* Header */
-.header {
-    font-size: 20px;
-    font-weight: bold;
-    color: #0f172a;
-}
-
-/* Place */
-.place {
-    margin: 10px 0;
-    font-size: 14px;
-    color: #555;
-}
-
-/* Prix */
-.price {
-    font-size: 32px;
-    font-weight: bold;
-    color: #e11d48;
-    margin: 20px 0;
-}
-
-/* Bouton */
-button {
-    width: 100%;
-    padding: 15px;
-    border: none;
-    border-radius: 12px;
-    background: #4f46e5;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-button:hover {
-    background: #4338ca;
-}
-
-/* Popup */
-.modal {
-    display: none;
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.7);
-}
-
-/* Contenu popup */
-.modal-content {
-    background: white;
-    margin: 10% auto;
-    width: 350px;
-    padding: 20px;
-    border-radius: 20px;
-}
-
-/* Carte bancaire */
-.card-visuel {
-    background: linear-gradient(135deg, #111827, #374151);
-    color: white;
-    border-radius: 15px;
-    padding: 15px;
-    margin-bottom: 15px;
-    text-align: left;
-}
-
-.card-number {
-    font-size: 18px;
-    letter-spacing: 2px;
-}
-
-.card-name {
-    font-size: 14px;
-}
-
-/* Inputs */
-input {
-    width: 95%;
-    padding: 12px;
-    margin: 8px 0;
-    border-radius: 10px;
-    border: 1px solid #ddd;
-}
-
-/* Footer */
-.footer {
-    font-size: 12px;
-    margin-top: 10px;
-    color: #888;
-}
-</style>
-</head>
-
-<body>
-
-<div class="container">
-
-<div class="header">🅿️ Smart Parking</div>
-
-<div class="place" id="placeInfo">Place...</div>
-
-<div class="price" id="price">3.00 DT</div>
-
-<button onclick="openModal()">Payer maintenant</button>
-
-<div class="footer">🔒 Paiement sécurisé</div>
-
-</div>
-
-<!-- POPUP -->
-<div id="modal" class="modal">
-<div class="modal-content">
-
-<h3>Paiement sécurisé</h3>
-
-<div class="card-visuel">
-<div class="card-number" id="num">•••• •••• •••• ••••</div>
-<div class="card-name" id="nomAff">Nom</div>
-</div>
-
-<input type="text" id="nom" placeholder="Nom sur la carte">
-<input type="text" id="numCarte" placeholder="Numéro carte" maxlength="16">
-<input type="text" id="date" placeholder="MM/AA">
-<input type="text" id="cvv" placeholder="CVV">
-
-<button id="btn" onclick="payer()">Confirmer paiement</button>
-
-</div>
-</div>
-
-<script>
-
-// PARAMS
-const params = new URLSearchParams(window.location.search);
-const place = params.get("place") || "1";
-const amount = params.get("amount") || "3.00";
-
-document.getElementById("placeInfo").innerText = "Place n° " + place;
-document.getElementById("price").innerText = amount + " DT";
-
-// POPUP
-function openModal(){
-    document.getElementById("modal").style.display = "block";
-}
-
-// VISUEL CARTE
-document.getElementById("numCarte").addEventListener("input", () => {
-    document.getElementById("num").innerText =
-        document.getElementById("numCarte").value || "•••• •••• •••• ••••";
-});
-
-document.getElementById("nom").addEventListener("input", () => {
-    document.getElementById("nomAff").innerText =
-        document.getElementById("nom").value || "Nom";
-});
-
-// PAIEMENT
-function payer() {
-
-    const nom = document.getElementById("nom").value;
-    const num = document.getElementById("numCarte").value;
-    const date = document.getElementById("date").value;
-    const cvv = document.getElementById("cvv").value;
-
-    if(!nom || num.length < 16 || !date || cvv.length < 3){
-        alert("Remplir correctement");
-        return;
-    }
-
-    const btn = document.getElementById("btn");
-    btn.innerText = "Traitement...";
-    btn.disabled = true;
-
-    const token = "Al3eurLGTUbjWPAefx1mLEk_qoUaD7nc";
-    const vPin = "V" + (29 + parseInt(place));
-
-    const url = `https://fra1.blynk.cloud/external/api/update?token=${token}&${vPin}=1`;
-
-    setTimeout(() => {
-        fetch(url)
-        .then(() => {
-            alert("Paiement réussi (" + amount + " DT)");
-            location.reload();
-        })
-        .catch(() => {
-            alert("Erreur");
-            btn.disabled = false;
-        });
-    }, 1200);
-}
-
-// fermer modal
-window.onclick = function(e){
-    if(e.target == document.getElementById("modal")){
-        document.getElementById("modal").style.display = "none";
-    }
-}
-
+// close modal
+window.onclick=(e)=>{
+    if(e.target==modal) modal.style.display="none";
+};
 </script>
 
 </body>
