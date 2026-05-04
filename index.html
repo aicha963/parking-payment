@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Paiement Sécurisé - Smart Parking</title>
+<title>Paiement de Réservation - Smart Parking</title>
 
 <style>
 body {
@@ -106,9 +106,9 @@ button:hover {
 <h1>🅿️ SMART PARKING</h1>
 <div class="place" id="placeInfo">Place...</div>
 
-<p>Temps dépassé - Paiement requis</p>
+<p>Veuillez confirmer votre réservation</p>
 
-<div class="price" id="price">Calcul...</div>
+<div class="price" id="price">Montant de réservation</div>
 
 <div class="card-form">
 
@@ -134,7 +134,7 @@ button:hover {
 </div>
 </div>
 
-<button id="btn" onclick="payer()">CONFIRMER LE PAIEMENT</button>
+<button id="btn" onclick="payer()">CONFIRMER LA RÉSERVATION</button>
 
 </div>
 
@@ -155,7 +155,7 @@ const amount = params.get("amount") || "3.00";
 document.getElementById("placeInfo").innerText = "Place n° " + place;
 document.getElementById("price").innerText = amount + " DT";
 
-// PAIEMENT
+// PAIEMENT (simulation)
 function payer(){
 
     const nom = document.getElementById("nom").value;
@@ -164,7 +164,7 @@ function payer(){
     const cvv = document.getElementById("cvv").value;
 
     if(!nom || num.length < 16 || !date || cvv.length < 3){
-        alert("Remplir correctement");
+        alert("Veuillez remplir correctement les informations");
         return;
     }
 
@@ -180,12 +180,12 @@ function payer(){
     setTimeout(() => {
         fetch(url)
         .then(() => {
-            alert("Paiement réussi (" + amount + " DT)");
+            alert("Réservation confirmée (" + amount + " DT)");
             location.reload();
         })
         .catch(() => {
-            alert("Erreur");
-            btn.innerText = "CONFIRMER LE PAIEMENT";
+            alert("Erreur lors du paiement");
+            btn.innerText = "CONFIRMER LA RÉSERVATION";
             btn.disabled = false;
         });
     }, 1500);
